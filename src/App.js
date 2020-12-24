@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import './App.css'
 
-const MULTIPLY = 'X'
+const MULTIPLY = 'x'
 const DIVISION = '/'
 const PLUS = '+'
 const MINUS = '-'
@@ -16,7 +16,11 @@ class App extends Component {
     screenPrev: null
   }
 
-  HandleRun = () => {
+  HandleRun = async () => {
+    const len = this.state.screenValue.length
+    if (this.state.screenValue[len - 1] === '.') {
+      await this.setState({ screenValue: this.state.screenValue.slice(0, -1) })
+    }
     this.setState({
       screenPrev: this.state.screenValue,
       screenValue: 0,
@@ -24,13 +28,10 @@ class App extends Component {
     })
   }
 
-  componen
-
   handleInput = (value) => {
 
     if (Number.isNaN(parseFloat(value.innerHTML))) {
 
-      // console.log('NAN : ' + value.innerHTML)
 
       switch (value.innerHTML) {
         case MULTIPLY:
@@ -74,38 +75,40 @@ class App extends Component {
           })
           break;
         case DOT:
-          this.setState({ screenValue: this.state.screenValue + '.' })
+          if (!this.state.screenValue.toString().includes('.')) {
+            this.setState({ screenValue: this.state.screenValue + '.' })
+          }
+
           break;
 
         case CALC:
-          const a = this.state.screenPrev
-          const b = this.state.screenValue
+          const a = Number.parseFloat(this.state.screenPrev)
+          const b = Number.parseFloat(this.state.screenValue)
           switch (this.state.type) {
-
             case PLUS:
               this.setState({
-                screenValue: Number.parseFloat(a) + Number.parseFloat(b),
+                screenValue: a + b,
                 screenPrev: null,
                 type: null
               })
               break;
             case DIVISION:
               this.setState({
-                screenValue: Number.parseFloat(a) / Number.parseFloat(b),
+                screenValue: a / b,
                 screenPrev: null,
                 type: null
               })
               break;
             case MINUS:
               this.setState({
-                screenValue: Number.parseFloat(a) - Number.parseFloat(b),
+                screenValue: a - b,
                 screenPrev: null,
                 type: null
               })
               break;
             case MULTIPLY:
               this.setState({
-                screenValue: Number.parseFloat(a) * Number.parseFloat(b),
+                screenValue: a * b,
                 screenPrev: null,
                 type: null
               })
@@ -119,7 +122,6 @@ class App extends Component {
           break;
       }
 
-
     } else {
       this.state.screenValue !== 0
         ? this.setState({ screenValue: this.state.screenValue + value.innerHTML })
@@ -132,7 +134,7 @@ class App extends Component {
       <div className='calculator'>
 
         <div className='screen'>
-          <small>{this.state.screenPrev}</small>
+          <small>{this.state.screenPrev} {this.state.type}</small>
           <span>{this.state.screenValue}</span>
         </div>
         <div className='keyboard'>
